@@ -9,6 +9,18 @@ var config = require('config');
 
 var app = koa();
 
+// default catch-all error handling
+app.use(function* errorHandler(next) {
+  try {
+    yield next;
+  }
+  catch (e) {
+    console.error('got an error', e);
+    this.status = 500;
+    this.body = {error: true, message: e.stack};
+  }
+});
+
 app.use(body());
 app.use(logger());
 app.use(router(app));
